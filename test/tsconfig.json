@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "commonjs",
+    "declaration": true,
+    "strict": true,
+    "sourceMap": true,
+    "outDir": "../dist/test",
+    "experimentalDecorators": true
+  },
+  "include": [
+    "../src/types.d.ts",
+    "./**/*.ts"
+  ]
+}

@@ -1,0 +1,24 @@
+definitions:
+  - name: User Fonts
+    src: ~/Library/Fonts
+    dest: ~/repos/private/applications-preferences/Apple
+    rsync:
+      args: -r
+
+  - name: iTerm 2 Preferences
+    src: ~/Library/Preferences/com.googlecode.iterm2.plist
+    dest: ~/repos/private/applications-preferences/iTerm/com.googlecode.iterm2.plist
+
+  - name: Backup
+    src: ~/Documents/personal/
+    dest: user@host::some/path/{dest}
+    rsync:
+      mode: backup
+      args: -avh --delete -e 'ssh -p 1234'
+      excludes:
+        - .DS_Store
+      hardlinks:
+        basePath: ../../../../
+    ssh:
+      dest: /some/path/{dest}
+      args: user@host -p1235

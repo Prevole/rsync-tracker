@@ -1,0 +1,7 @@
+.nyc_output/
+coverage/
+test/
+src/
+dist/test/
+.idea
+npm-debug.log

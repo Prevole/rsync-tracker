@@ -1,0 +1,29 @@
+definitions:
+  - name: User Fonts 2
+    src: ~/Library/Fonts
+    dest: ~/repos/private/applications-preferences/Apple
+    rsync:
+      args: -r
+
+  - name: Mail signatures
+    src: ~/Library/Mail/V2/MailData/Signatures
+    dest: ~/repos/private/applications-preferences/Apple/Mail
+    rsync:
+      args: -r --delete
+      excludes:
+        - AccountsMap.plist
+        - SignaturesByAccount.plist
+
+  - name: Backup
+    src: ~/Documents/personal
+    dest: user@host::some/path/{dest}
+    rsync:
+      mode: backup
+      args: -avh --delete -e 'ssh -p 1234'
+      excludes:
+        - .DS_Store
+      hardlinks:
+        basePath: ../../../../
+    ssh:
+      dest: /some/path/{dest}
+      args: user@host -p1235

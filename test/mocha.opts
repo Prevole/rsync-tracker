@@ -1,0 +1,3 @@
+--watch-extensions ts
+-r ts-node/register
+test/**/*.test.ts
