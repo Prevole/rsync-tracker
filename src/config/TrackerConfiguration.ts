@@ -2,10 +2,10 @@ import RsyncConfiguration, { RawRsyncConfiguration } from './RsyncConfiguration'
 import SshConfiguration, { RawSshConfiguration } from './SshConfiguration';
 
 export default class TrackerConfiguration {
-  private _name: string;
+  private readonly _name: string;
 
-  private _rsyncConfig: RsyncConfiguration;
-  private _sshConfig: SshConfiguration | null;
+  private readonly _rsyncConfig: RsyncConfiguration;
+  private readonly _sshConfig: SshConfiguration | null;
 
   constructor(name: string, config: RawTrackerConfiguration) {
     this._name = name;

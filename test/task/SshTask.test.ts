@@ -17,7 +17,7 @@ describe('SshTask', () => {
 
       const task = new SshTask(config, 'ls /');
 
-      expect(task.command()).to.equal('/usr/bin/ssh -p 1234 ls /');
+      expect((task as any).command()).to.equal('/usr/bin/ssh -p 1234 ls /');
     });
   });
 });

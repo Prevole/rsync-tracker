@@ -2,8 +2,8 @@ import Inject from '../ioc/Inject';
 import FileUtils from '../utils/FileUtils';
 
 export default class SshConfiguration {
-  private _dest: string;
-  private _args: string;
+  private readonly _dest: string;
+  private readonly _args: string;
 
   @Inject('sshBin')
   private _bin!: string;

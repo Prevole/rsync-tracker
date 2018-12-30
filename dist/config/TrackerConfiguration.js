@@ -3,28 +3,40 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const RsyncConfiguration_1 = require("./RsyncConfiguration");
 const SshConfiguration_1 = require("./SshConfiguration");
 class TrackerConfiguration {
-    constructor(binaries, config) {
-        this._name = config.name;
-        this._rsync = new RsyncConfiguration_1.default(binaries, config.src, config.dest, config.rsync);
+    constructor(name, config) {
+        this._name = name;
+        this._rsyncConfig = new RsyncConfiguration_1.default(config.src, config.dest, config.rsync);
         if (config.ssh) {
-            this._ssh = new SshConfiguration_1.default(config.ssh);
+            this._sshConfig = new SshConfiguration_1.default(config.ssh);
         }
         else {
-            this._ssh = null;
+            this._sshConfig = null;
         }
     }
-    init() {
-        this._rsync.init();
-        if (this._ssh) {
-            this._ssh.init();
-        }
+    get name() {
+        return this._name;
+    }
+    get sshConfig() {
+        return this._sshConfig;
+    }
+    get rsyncConfig() {
+        return this._rsyncConfig;
+    }
+    resolve() {
+        this._rsyncConfig.resolve();
         return this;
+    }
+    shouldCreateDest() {
+        return this._rsyncConfig.isCreateDest;
+    }
+    isSsh() {
+        return this._sshConfig !== null;
     }
     toJson() {
         return {
             name: this._name,
-            rsync: this._rsync.toJson(),
-            ssh: this._ssh ? this._ssh.toJson() : undefined
+            rsync: this._rsyncConfig.toJson(),
+            ssh: this._sshConfig ? this._sshConfig.toJson() : undefined
         };
     }
 }

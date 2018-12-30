@@ -1,5 +1,7 @@
-export default interface Taskable {
+import Queueable from '../queue/QueueTask';
+
+export default interface Taskable extends Queueable {
   canRunIfPreviousTaskFailed(): boolean;
 
-  run(): void;
+  run(): boolean;
 }

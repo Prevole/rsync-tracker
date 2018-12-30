@@ -29,7 +29,7 @@ export default class BackupPathBuilder {
 
   updateLatestBackupPath(config: TrackerConfiguration, usedPath: string) {
     const lastFile = this.pathToLastFile(this.digestDir(config.name));
-    this.fs.writeFileSync(lastFile, usedPath);
+    this.fs.writeFileSync(lastFile, usedPath, 'utf8');
   }
 
   private previousBackupPath(name: string): string | undefined {
@@ -37,12 +37,12 @@ export default class BackupPathBuilder {
 
     if (!this.fs.existsSync(digestDir)) {
       this.fs.mkdirSync(digestDir);
-      this.fs.writeFileSync(`${digestDir}/name`, name);
+      this.fs.writeFileSync(`${digestDir}/name`, name, 'utf8');
     } else {
       const previous = this.pathToLastFile(digestDir);
 
       if (this.fs.existsSync(previous)) {
-        return this.fs.readFileSync(previous).replace(/^\s+|\s+$/g, '');
+        return this.fs.readFileSync(previous, 'utf8').replace(/^\s+|\s+$/g, '');
       }
     }
 

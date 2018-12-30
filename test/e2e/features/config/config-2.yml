@@ -1,0 +1,6 @@
+definitions:
+  - name: Third
+    src: ~/data/third
+    dest: ~/output
+    rsync:
+      args: -r -v

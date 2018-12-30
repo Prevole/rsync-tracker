@@ -1,13 +1,14 @@
 import RsyncConfiguration from '../config/RsyncConfiguration';
+import { TaskPriority } from '../queue/QueueTask';
 import CommandBuilder from '../utils/CommandBuilder';
-import Task from './Task';
+import CommandTask from './CommandTask';
 
-export default class RsyncTask extends Task {
+export default class RsyncTask extends CommandTask {
   private readonly _rsyncConfig: RsyncConfiguration;
   private readonly _backupPath: string;
 
   constructor(rsyncConfig: RsyncConfiguration, backupPath?: string) {
-    super();
+    super(TaskPriority.NORMAL);
     this._rsyncConfig = rsyncConfig;
     this._backupPath = backupPath ? backupPath : '';
   }

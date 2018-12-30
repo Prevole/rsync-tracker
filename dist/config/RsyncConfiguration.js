@@ -8,65 +8,69 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 const Inject_1 = require("../ioc/Inject");
 class RsyncConfiguration {
-    constructor(binaries, src, dest, config) {
-        this._args = '';
+    constructor(src, dest, config) {
         this._excludes = [];
         this._mode = RsyncMode.SYNC;
-        this._bin = binaries.rsync;
+        this._createDest = false;
         this._src = src;
         this._dest = dest;
         if (config) {
             if (config.mode) {
-                this._mode = RsyncMode['backup'];
+                this._mode = RsyncMode[config.mode.toUpperCase()];
             }
             if (config.args) {
                 this._args = config.args;
             }
-            else {
-                this._args = '';
-            }
             if (config.excludes) {
                 this._excludes = config.excludes;
             }
-            else {
-                this._excludes = [];
-            }
             if (config.hardlinks) {
-                this._hardlinks = `--link-dest=${config.hardlinks.basePath}`;
+                this._hardlinks = config.hardlinks.basePath;
+            }
+            if (config.createDest !== undefined) {
+                this._createDest = config.createDest;
             }
         }
     }
-    init() {
-        if (this._src.endsWith('/')) {
-            this._src = `${this.path.resolve(this.untildifier.resolve(this._src))}/`;
-        }
-        else {
-            this._src = this.path.resolve(this.untildifier.resolve(this._src));
-        }
-        if (this._dest.indexOf('{dest}') < 0) {
-            this._dest = this.path.resolve(this.untildifier.resolve(this._dest));
-        }
+    get bin() {
+        return this._bin;
     }
-    build() {
-        return [
-            this._bin,
-            this._hardlinks ? this._hardlinks : '',
-            this._args,
-            this._excludes.reduce((memo, exclude) => `${memo} --exclude='${exclude}'`, ''),
-            this._src,
-            this._dest
-        ].join(' ');
+    get src() {
+        return this._src;
+    }
+    get dest() {
+        return this._dest;
+    }
+    get hardLinks() {
+        return this._hardlinks;
+    }
+    get args() {
+        return this._args;
+    }
+    get excludes() {
+        return this._excludes;
+    }
+    get mode() {
+        return this._mode;
+    }
+    get isCreateDest() {
+        return this._createDest;
+    }
+    resolve() {
+        this._src = this.fileUtils.resolve(this._src);
+        this._dest = this.fileUtils.resolve(this._dest);
+        return this;
     }
     toJson() {
         const json = {
             src: this._src,
             dest: this._dest,
+            mode: this._mode,
             bin: this._bin,
-            args: this._args
+            args: this._args,
+            createDest: this._createDest,
+            excludes: this._excludes
         };
-        if (this._excludes) {
-            json.excludes = this._excludes;
-        }
         if (this._hardlinks) {
             json.hardlinks = this._hardlinks;
         }
@@ -74,11 +78,14 @@ class RsyncConfiguration {
     }
 }
 __decorate([
+    Inject_1.default('rsyncBin')
+], RsyncConfiguration.prototype, "_bin", void 0);
+__decorate([
     Inject_1.default()
 ], RsyncConfiguration.prototype, "path", void 0);
 __decorate([
     Inject_1.default()
-], RsyncConfiguration.prototype, "untildifier", void 0);
+], RsyncConfiguration.prototype, "fileUtils", void 0);
 exports.default = RsyncConfiguration;
 var RsyncMode;
 (function (RsyncMode) {

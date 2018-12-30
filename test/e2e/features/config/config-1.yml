@@ -1,0 +1,14 @@
+definitions:
+  - name: First
+    src: ~/data/first
+    dest: ~/output
+    rsync:
+      args: -r -v
+
+  - name: Second
+    src: ~/data/second/
+    dest: ~/output/second/{dest}
+    rsync:
+      mode: backup
+      args: -r -v
+      createDest: true

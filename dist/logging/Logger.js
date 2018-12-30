@@ -11,9 +11,12 @@ class Logger {
     info(message) {
         this.logger.info(message);
     }
+    error(error) {
+        this.logger.error(error);
+    }
 }
 __decorate([
-    Inject_1.default()
+    Inject_1.default('winston')
 ], Logger.prototype, "logger", void 0);
 exports.default = Logger;
 //# sourceMappingURL=Logger.js.map

@@ -12,24 +12,31 @@ class SshConfiguration {
         this._dest = config.dest;
         this._args = config.args;
     }
-    init() {
-        if (this._dest.indexOf('{dest}') < 0) {
-            this._dest = this.path.resolve(this.untildifier.resolve(this._dest));
-        }
-        return this;
+    get dest() {
+        return this._dest;
+    }
+    get bin() {
+        return this._bin;
+    }
+    get args() {
+        return this._args;
     }
     toJson() {
         return {
+            bin: this._bin,
             dest: this._dest,
             args: this._args
         };
     }
 }
 __decorate([
+    Inject_1.default('sshBin')
+], SshConfiguration.prototype, "_bin", void 0);
+__decorate([
     Inject_1.default()
 ], SshConfiguration.prototype, "path", void 0);
 __decorate([
     Inject_1.default()
-], SshConfiguration.prototype, "untildifier", void 0);
+], SshConfiguration.prototype, "fileUtils", void 0);
 exports.default = SshConfiguration;
 //# sourceMappingURL=SshConfiguration.js.map

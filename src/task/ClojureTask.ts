@@ -1,23 +1,15 @@
-import Taskable from './Taskable';
+import { TaskPriority } from '../queue/QueueTask';
+import Task from './Task';
 
-export default class ClojureTask implements Taskable {
-  private readonly _clojure: Function;
-  private _canRunIfPreviousTaskFails: boolean = false;
+export default class ClojureTask extends Task {
+  private readonly _clojure: () => boolean;
 
-  constructor(clojure: Function) {
+  constructor(clojure: () => boolean) {
+    super(TaskPriority.NORMAL);
     this._clojure = clojure;
   }
 
-  runIfPreviousTaskFail(canRun: boolean): ClojureTask {
-    this._canRunIfPreviousTaskFails = canRun;
-    return this;
-  }
-
-  canRunIfPreviousTaskFailed(): boolean {
-    return this._canRunIfPreviousTaskFails;
-  }
-
-  run(): void {
-    this._clojure();
+  run(): boolean {
+    return this._clojure();
   }
 }

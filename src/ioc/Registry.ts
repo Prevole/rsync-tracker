@@ -9,11 +9,21 @@ export default class Registry {
     }
   }
 
+  static registerIfNotExist(key: string, value: any) {
+    if (!Registry.deps[key]) {
+      Registry.deps[key] = value;
+    }
+  }
+
   static get(key: string): any {
     return Registry.deps[key];
   }
 
-  static clear(): void {
-    Registry.deps = {};
+  static clear(key?: string): void {
+    if (key) {
+      delete Registry.deps[key];
+    } else {
+      Registry.deps = {};
+    }
   }
 }
