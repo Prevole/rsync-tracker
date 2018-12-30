@@ -25,6 +25,8 @@ describe('CommandTask', () => {
       loggerStub = sinon.createStubInstance(Logger);
       childProcessStub = sinon.stub({ execSync() {} });
 
+      childProcessStub.execSync.returns(new ArrayBuffer(0));
+
       register('logger', loggerStub);
       register('childProcess', childProcessStub);
     });

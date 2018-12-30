@@ -5,28 +5,32 @@ import { expect, register, sinon } from '../expect';
 import Logger from '../../src/logging/Logger';
 
 describe('Logger', () => {
-  let loggerStub: any;
+  let loggerStubs: any[] = [];
 
   beforeEach(() => {
-    loggerStub = sinon.stub({
-      info() {},
-      error() {}
-    });
+    for (let i = 0; i < 2; i++) {
+      loggerStubs.push(sinon.stub({
+        info() {},
+        error() {}
+      }));
+    }
 
-    register('winston', loggerStub);
+    register('loggers', loggerStubs);
   });
 
   describe('info', () => {
     it('should log', () => {
       new Logger().info('message');
-      expect(loggerStub.info).to.have.been.calledWith('message');
+      expect(loggerStubs[0].info).to.have.been.calledWith('message');
+      expect(loggerStubs[1].info).to.have.been.calledWith('message');
     });
   });
 
   describe('error', () => {
     it('should log', () => {
-      new Logger().error('message');
-      expect(loggerStub.error).to.have.been.calledWith('message');
+      new Logger().error('error');
+      expect(loggerStubs[0].error).to.have.been.calledWith('error');
+      expect(loggerStubs[1].error).to.have.been.calledWith('error');
     });
   });
 });

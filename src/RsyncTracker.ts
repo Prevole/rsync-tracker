@@ -92,6 +92,6 @@ export default class RsyncTracker {
     const loader = new ConfigurationLoader();
     const taskEngine = new TaskEngine(loader.load());
 
-    taskEngine.process();
+    // taskEngine.process();
   }
 }
