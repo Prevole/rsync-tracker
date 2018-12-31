@@ -2,7 +2,6 @@ node_modules
 .nyc_output
 coverage
 dist/test/
-dist/**/*.map
 .idea
 npm-debug.log
 test/e2e/features/output

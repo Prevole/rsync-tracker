@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const RsyncTracker = require('../dist/RsyncTracker');
+const RsyncTracker = require('../dist/src/RsyncTracker');
 
 RsyncTracker.default.main();
 

@@ -6,6 +6,7 @@
     "outDir": "./dist",
     "strict": true,
     "sourceMap": true,
+    "inlineSources": true,
     "experimentalDecorators": true,
     "resolveJsonModule": true,
     "esModuleInterop": true

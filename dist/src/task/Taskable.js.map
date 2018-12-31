@@ -1,0 +1,1 @@
+{"version":3,"file":"Taskable.js","sourceRoot":"","sources":["../../../src/task/Taskable.ts"],"names":[],"mappings":"","sourcesContent":["import Queueable from '../queue/QueueTask';\n\nexport default interface Taskable extends Queueable {\n  canRunIfPreviousTaskFailed(): boolean;\n\n  run(): boolean;\n}\n"]}

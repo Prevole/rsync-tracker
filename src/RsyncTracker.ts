@@ -90,8 +90,10 @@ export default class RsyncTracker {
     Registry.registerIfNotExist('backupPathBuilder', new BackupPathBuilder());
 
     const loader = new ConfigurationLoader();
-    const taskEngine = new TaskEngine(loader.load());
+    const config = loader.load();
+    console.log(config);
+    const taskEngine = new TaskEngine(config);
 
-    // taskEngine.process();
+    taskEngine.process();
   }
 }
