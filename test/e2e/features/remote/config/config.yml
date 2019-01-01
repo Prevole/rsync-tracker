@@ -1,0 +1,18 @@
+definitions:
+  - name: First
+    src: ~/data/first
+    dest: tester@localhost:/output
+    rsync:
+      args: -r -v -e 'ssh -p11022'
+      createDest: true
+
+  - name: Second
+    src: ~/data/second/
+    dest: tester@localhost:/output/second/{dest}
+    rsync:
+      mode: backup
+      args: -r -v -e 'ssh -p11022'
+      createDest: true
+    ssh:
+      dest: /output/second/{dest}
+      args: tester@localhost -p11022 -v

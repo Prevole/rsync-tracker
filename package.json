@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.1.7",
+    "@types/dockerode": "^2.5.10",
     "@types/dotenv": "^6.1.0",
     "@types/js-yaml": "^3.11.4",
     "@types/lodash": "^4.14.119",
@@ -47,6 +48,7 @@
     "@types/sinon": "^2.3.2",
     "@types/sinon-chai": "^2.7.35",
     "chai": "^4.2.0",
+    "dockerode": "^2.5.7",
     "dotenv": "^6.2.0",
     "mocha": "^5.2.0",
     "nyc": "^11.0.3",

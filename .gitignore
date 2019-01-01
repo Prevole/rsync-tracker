@@ -4,5 +4,6 @@ coverage
 dist/test/
 .idea
 npm-debug.log
-test/e2e/features/output
-test/e2e/features/.env
+test/e2e/features/**/output
+test/e2e/features/**/.env
+test/e2e/features/**/ssh/authorized_keys

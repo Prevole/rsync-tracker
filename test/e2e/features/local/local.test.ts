@@ -8,15 +8,15 @@ import * as path from 'path';
 import * as rmdir from 'rimraf';
 import * as dotenv from 'dotenv';
 
-import { expect } from '../../expect';
+import { expect } from '../../../expect';
 
-import RsyncTracker from '../../../src/RsyncTracker';
-import Registry from '../../../src/ioc/Registry';
+import RsyncTracker from '../../../../src/RsyncTracker';
+import Registry from '../../../../src/ioc/Registry';
 
-describe('RsyncTracker', function() {
-  const firstBackupDirName  = '30f6e7fbf3eb5d3a80e8b1359863aa84cdb288d6';
-  const secondBackupDirName = '6996a4f7542d396d5bf6e32e9cf32977690a303a';
-  const thirdBackupDirName  = 'abe99c6af7b3b6c55bf4bf75b253a1cf7a1017c0';
+describe('RsyncTracker - Local', function() {
+  const firstBackupDirName  = '22284fb5b2fc7fed8b7a51767d5cd35b6215612b';
+  const secondBackupDirName = 'e4708f2943f6d1921c776061d2b30ab37b58977a';
+  const thirdBackupDirName  = 'c390d7a8396cabbeb61b42f97adc001ac7f67802';
 
   const firstFirstFileSum   = '4e1243bd22c66e76c2ba9eddc1f91394e57f9f83'; // first/a/test.txt
   const firstSecondFileSum  = '3e7c9b1bbc908867af8acb8a7245d0cde44a7d87'; // first/b/test.txt
@@ -27,7 +27,7 @@ describe('RsyncTracker', function() {
   const thirdFirstFileSum   = '7c2e2a2827062d0ad79965b98bbb94a4c4ffcff2'; // third/a/test.txt
   const thirdSecondFileSum  = 'fa1ea636f9ef6255228ca043eb282b5b208d8411'; // third/a/b/test.txt
 
-  const baseDir = path.resolve('./test/e2e/features');
+  const baseDir = path.resolve('./test/e2e/features/local');
   const outputDir = `${baseDir}/output`;
   const envFile = `${baseDir}/.env`;
   const backupDir = `${outputDir}/bck`;
@@ -83,21 +83,24 @@ RT_LOGS_TO_CONSOLE=true`;
 
     fs.writeFileSync(envFile, envFileContent);
 
-    dotenv.config({ path: envFile });
+    const envConfig = dotenv.parse(fs.readFileSync(envFile));
+    for (let k in envConfig) {
+      process.env[k] = envConfig[k];
+    }
 
     Registry.register('os', os);
     Registry.register('dateUtils', dateUtils);
   });
 
   afterEach(function() {
-    // if (this.currentTest.state === 'passed') {
-    //   rmdir.sync(outputDir);
-    // }
+    if (this.currentTest.state === 'passed') {
+      rmdir.sync(outputDir);
+    }
 
     fs.unlinkSync(envFile);
   });
 
-  it('should do something', function() {
+  it('should manage rsync locally', function() {
     function check(secondDirRound: string, secondBackupPrefix: string) {
       expect(fs.existsSync(firstDir)).to.be.true;
 
