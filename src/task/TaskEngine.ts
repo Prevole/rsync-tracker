@@ -3,24 +3,24 @@ import TrackerConfiguration from '../config/TrackerConfiguration';
 import Inject from '../ioc/Inject';
 import Logger from '../logging/Logger';
 import Queue from '../queue/Queue';
-import SyncTaskBuilder from './SyncTaskBuilder';
 import Taskable from './Taskable';
+import TaskBuilder from './TaskBuilder';
 
 export default class TaskEngine {
   private readonly config: Configuration;
+  private readonly builder: TaskBuilder;
 
   @Inject()
   private logger!: Logger;
 
-  constructor(config: Configuration) {
+  constructor(config: Configuration, builder: TaskBuilder) {
     this.config = config;
+    this.builder = builder;
   }
 
   process() {
-    const builder = new SyncTaskBuilder();
-
     const queues = this.config.trackers.reduce((queues: Queue[], tracker: TrackerConfiguration) => {
-      return queues.concat(new Queue().queueAll(builder.build(tracker)));
+      return queues.concat(new Queue().queueAll(this.builder.build(tracker)));
     }, []);
 
     queues.forEach((queue: Queue) => {

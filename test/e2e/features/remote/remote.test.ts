@@ -84,6 +84,8 @@ RT_LOGS_TO_CONSOLE=true`;
   }
 
   beforeEach(function(done) {
+    this.timeout(60000);
+
     docker
       .pull('panubo/sshd', {})
       .then(function() {

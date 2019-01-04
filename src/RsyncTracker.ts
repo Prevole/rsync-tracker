@@ -15,6 +15,7 @@ import Registry from './ioc/Registry';
 import BackupPathBuilder from './backup/BackupPathBuilder';
 import ConfigurationLoader from './config/ConfigurationLoader';
 import Logger from './logging/Logger';
+import SyncTaskBuilder from './task/SyncTaskBuilder';
 import TaskEngine from './task/TaskEngine';
 
 import DateUtils from './utils/DateUtils';
@@ -91,8 +92,7 @@ export default class RsyncTracker {
 
     const loader = new ConfigurationLoader();
     const config = loader.load();
-    console.log(config);
-    const taskEngine = new TaskEngine(config);
+    const taskEngine = new TaskEngine(config, new SyncTaskBuilder());
 
     taskEngine.process();
   }

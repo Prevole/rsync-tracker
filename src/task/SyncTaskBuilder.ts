@@ -7,8 +7,9 @@ import RsyncTask from './RsyncTask';
 import SimpleTask from './SimpleTask';
 import SshTask from './SshTask';
 import Taskable from './Taskable';
+import TaskBuilder from './TaskBuilder';
 
-export default class SyncTaskBuilder {
+export default class SyncTaskBuilder implements TaskBuilder {
   @Inject()
   private backupPathBuilder!: BackupPathBuilder;
 
