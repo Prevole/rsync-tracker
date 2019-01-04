@@ -45,6 +45,7 @@ function prepareLoggers(): winston.Logger[] {
     transports: [ dailyTransport ]
   }));
 
+  /* istanbul ignore next */
   if (Registry.get('consoleLogs')) {
     loggers.push(winston.createLogger({
       format: format.combine(format.colorize(), format.timestamp(), simpleFormat),
