@@ -1,0 +1,1 @@
+{"version":3,"file":"TaskBuilder.js","sourceRoot":"","sources":["../../../src/task/TaskBuilder.ts"],"names":[],"mappings":"","sourcesContent":["import TrackerConfiguration from '../config/TrackerConfiguration';\nimport Taskable from './Taskable';\n\nexport default interface TaskBuilder {\n  build(config: TrackerConfiguration): Taskable[];\n}\n"]}

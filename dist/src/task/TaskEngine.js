@@ -11,15 +11,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const Inject_1 = __importDefault(require("../ioc/Inject"));
 const Queue_1 = __importDefault(require("../queue/Queue"));
-const SyncTaskBuilder_1 = __importDefault(require("./SyncTaskBuilder"));
 class TaskEngine {
-    constructor(config) {
+    constructor(config, builder) {
         this.config = config;
+        this.builder = builder;
     }
     process() {
-        const builder = new SyncTaskBuilder_1.default();
         const queues = this.config.trackers.reduce((queues, tracker) => {
-            return queues.concat(new Queue_1.default().queueAll(builder.build(tracker)));
+            return queues.concat(new Queue_1.default().queueAll(this.builder.build(tracker)));
         }, []);
         queues.forEach((queue) => {
             let previousResult = true;

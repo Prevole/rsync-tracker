@@ -24,6 +24,7 @@ const Registry_1 = __importDefault(require("./ioc/Registry"));
 const BackupPathBuilder_1 = __importDefault(require("./backup/BackupPathBuilder"));
 const ConfigurationLoader_1 = __importDefault(require("./config/ConfigurationLoader"));
 const Logger_1 = __importDefault(require("./logging/Logger"));
+const SyncTaskBuilder_1 = __importDefault(require("./task/SyncTaskBuilder"));
 const TaskEngine_1 = __importDefault(require("./task/TaskEngine"));
 const DateUtils_1 = __importDefault(require("./utils/DateUtils"));
 const DigestUtils_1 = __importDefault(require("./utils/DigestUtils"));
@@ -46,6 +47,7 @@ function prepareLoggers() {
         format: logform_1.format.combine(logform_1.format.timestamp(), simpleFormat),
         transports: [dailyTransport]
     }));
+    /* istanbul ignore next */
     if (Registry_1.default.get('consoleLogs')) {
         loggers.push(winston.createLogger({
             format: logform_1.format.combine(logform_1.format.colorize(), logform_1.format.timestamp(), simpleFormat),
@@ -80,9 +82,8 @@ class RsyncTracker {
         Registry_1.default.registerIfNotExist('backupPathBuilder', new BackupPathBuilder_1.default());
         const loader = new ConfigurationLoader_1.default();
         const config = loader.load();
-        console.log(config);
-        const taskEngine = new TaskEngine_1.default(config);
-        // taskEngine.process();
+        const taskEngine = new TaskEngine_1.default(config, new SyncTaskBuilder_1.default());
+        taskEngine.process();
     }
 }
 RsyncTracker.version = package_json_1.default.version;

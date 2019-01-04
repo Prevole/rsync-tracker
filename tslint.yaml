@@ -49,10 +49,6 @@ rules:
   no-unused-expression:
     - false
     - allow-fast-null-checks
-  no-unused-variable:
-    - true
-    - ignore-pattern: "^_"
-  no-use-before-declare: true
   no-var-keyword: true
   radix: true
   return-undefined: true
