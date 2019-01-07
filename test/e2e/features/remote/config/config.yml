@@ -4,7 +4,6 @@ definitions:
     dest: tester@localhost:/output
     rsync:
       args: -r -v -e 'ssh -p11022'
-      createDest: true
 
   - name: Second
     src: ~/data/second/
