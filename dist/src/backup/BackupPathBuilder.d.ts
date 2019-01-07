@@ -7,7 +7,7 @@ export default class BackupPathBuilder {
     private fs;
     nextBackupPath(config: TrackerConfiguration): string;
     updateLatestBackupPath(config: TrackerConfiguration, usedPath: string): void;
-    private previousBackupPath;
+    previousBackupPath(name: string): string | undefined;
     private digestDir;
     private pathToLastFile;
 }

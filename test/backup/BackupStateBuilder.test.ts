@@ -1,17 +1,18 @@
 import 'mocha';
 
 import * as fs from 'fs';
+import BackupState from '../../src/backup/BackupState';
 
 import { expect, register, sinon } from '../expect';
 
-import BackupPathBuilder from '../../src/backup/BackupPathBuilder';
+import BackupStateBuilder from '../../src/backup/BackupStateBuilder';
 import TrackerConfiguration from '../../src/config/TrackerConfiguration';
 
 import DateUtils from '../../src/utils/DateUtils';
 import DigestUtils from '../../src/utils/DigestUtils';
 import PathUtils from '../../src/utils/PathUtils';
 
-describe('BackupPathBuilder', () => {
+describe('BackupStateBuilder', () => {
   const trackerConfig = new TrackerConfiguration('config', {
     name: 'raw',
     src: 'src',
@@ -27,7 +28,7 @@ describe('BackupPathBuilder', () => {
 
   let digestUtilsStub: any;
 
-  describe('nextBackupPath', () => {
+  describe('build', () => {
     let dateUtilsStub: any;
     let pathUtilsStub: any;
 
@@ -46,23 +47,25 @@ describe('BackupPathBuilder', () => {
       register('fs', fsStub);
     });
 
-    it('should return the next path as there is no previous backup', () => {
+    it('should build a state with the next path as there is no previous backup', () => {
       pathUtilsStub.pathFromDate.returns('2018/11/25/03');
       pathUtilsStub.avoidConflict.callsFake((previous: string, next: string) => next);
 
       fsStub.existsSync.onFirstCall().returns(true);
 
-      const builder = new BackupPathBuilder();
+      const builder = new BackupStateBuilder();
 
-      const nextPath = builder.nextBackupPath(trackerConfig);
+      const state = builder.build(trackerConfig);
 
-      expect(nextPath).to.equal('2018/11/25/03');
+      expect(state.next).to.equal('2018/11/25/03');
+      expect(state.hasPrevious()).to.be.false;
+      expect(state.previous).to.be.undefined;
       expect(dateUtilsStub.now).to.have.been.calledOnce;
       expect(pathUtilsStub.pathFromDate).to.have.been.calledOnce;
       expect(pathUtilsStub.avoidConflict).to.have.been.calledWith(undefined, '2018/11/25/03');
     });
 
-    it('should return the next path as there is no previous backup but backup meta data is present', () => {
+    it('should build a state with the next path as there is no previous backup but backup meta data is present', () => {
       pathUtilsStub.pathFromDate.returns('2018/11/25/03');
       pathUtilsStub.avoidConflict.callsFake((previous: string, next: string) => next);
 
@@ -70,11 +73,13 @@ describe('BackupPathBuilder', () => {
 
       fsStub.existsSync.onFirstCall().returns(false);
 
-      const builder = new BackupPathBuilder();
+      const builder = new BackupStateBuilder();
 
-      const nextPath = builder.nextBackupPath(trackerConfig);
+      const state = builder.build(trackerConfig);
 
-      expect(nextPath).to.equal('2018/11/25/03');
+      expect(state.next).to.equal('2018/11/25/03');
+      expect(state.hasPrevious()).to.be.false;
+      expect(state.previous).to.undefined;
       expect(dateUtilsStub.now).to.have.been.calledOnce;
       expect(pathUtilsStub.pathFromDate).to.have.been.calledOnce;
       expect(pathUtilsStub.avoidConflict).to.have.been.calledWith(undefined, '2018/11/25/03');
@@ -82,7 +87,7 @@ describe('BackupPathBuilder', () => {
       expect(fsStub.writeFileSync).to.have.been.calledWith('bck/abcd/name', 'config');
     });
 
-    it('should return the next path as there is no previous backup but backup meta data is present with previous backed recorded', () => {
+    it('should build a state with the next path as there is no previous backup but backup meta data is present with previous backed recorded', () => {
       pathUtilsStub.pathFromDate.returns('2018/11/25/03');
       pathUtilsStub.avoidConflict.callsFake((previous: string, next: string) => next);
 
@@ -92,18 +97,20 @@ describe('BackupPathBuilder', () => {
       fsStub.existsSync.onSecondCall().returns(true);
       fsStub.readFileSync.returns('   2018/11/25/02   ');
 
-      const builder = new BackupPathBuilder();
+      const builder = new BackupStateBuilder();
 
-      const nextPath = builder.nextBackupPath(trackerConfig);
+      const state = builder.build(trackerConfig);
 
-      expect(nextPath).to.equal('2018/11/25/03');
+      expect(state.next).to.equal('2018/11/25/03');
+      expect(state.hasPrevious()).to.be.true;
+      expect(state.previous).to.equal('2018/11/25/02');
       expect(dateUtilsStub.now).to.have.been.calledOnce;
       expect(pathUtilsStub.pathFromDate).to.have.been.calledOnce;
       expect(pathUtilsStub.avoidConflict).to.have.been.calledWith('2018/11/25/02', '2018/11/25/03');
     });
   });
 
-  describe('updateLatestBackupPath', () => {
+  describe('update', () => {
     beforeEach(() => {
       sinon.restore(fsStub);
 
@@ -118,9 +125,11 @@ describe('BackupPathBuilder', () => {
     it('update the file with given path', () => {
       digestUtilsStub.digest.returns('abcd');
 
-      const builder = new BackupPathBuilder();
+      const state = new BackupState('aaaa', '2018/11/25/02', '2018/11/25/01');
 
-      builder.updateLatestBackupPath(trackerConfig, '2018/11/25/02');
+      const builder = new BackupStateBuilder();
+
+      builder.update(state);
 
       expect(fsStub.writeFileSync).to.have.been.calledWith('bck/abcd/last', '2018/11/25/02');
     });

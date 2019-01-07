@@ -1,3 +1,4 @@
+import BackupState from '../backup/BackupState';
 import RsyncConfiguration from '../config/RsyncConfiguration';
 import { TaskPriority } from '../queue/QueueTask';
 import CommandBuilder from '../utils/CommandBuilder';
@@ -5,22 +6,33 @@ import CommandTask from './CommandTask';
 
 export default class RsyncTask extends CommandTask {
   private readonly _rsyncConfig: RsyncConfiguration;
-  private readonly _backupPath: string;
+  private readonly _backupState?: BackupState;
 
-  constructor(rsyncConfig: RsyncConfiguration, backupPath?: string) {
+  constructor(rsyncConfig: RsyncConfiguration, backupState?: BackupState) {
     super(TaskPriority.NORMAL);
     this._rsyncConfig = rsyncConfig;
-    this._backupPath = backupPath ? backupPath : '';
+    this._backupState = backupState;
   }
 
   protected command(): string {
-    return new CommandBuilder()
-      .push(this._rsyncConfig.bin)
-      .pushPattern('--link-dest=%s', this._rsyncConfig.hardLinks)
+    const builder = new CommandBuilder()
+      .push(this._rsyncConfig.bin);
+
+    if (this._backupState !== undefined && this._backupState.hasPrevious()) {
+      builder.pushPattern('--link-dest=%s', `${this._rsyncConfig.hardLinks}${this._backupState.previous}`);
+    }
+
+    builder
       .push(this._rsyncConfig.args)
       .pushCollectionPattern('--exclude=%s', this._rsyncConfig.excludes)
-      .push(this._rsyncConfig.src)
-      .push(this._rsyncConfig.dest.replace('{dest}', this._backupPath))
-      .build();
+      .push(this._rsyncConfig.src);
+
+    if (this._backupState !== undefined) {
+      builder.push(this._rsyncConfig.dest.replace('{dest}', this._backupState.next));
+    } else {
+      builder.push(this._rsyncConfig.dest);
+    }
+
+    return builder.build();
   }
 }

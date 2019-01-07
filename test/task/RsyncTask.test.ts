@@ -1,4 +1,5 @@
 import 'mocha';
+import BackupState from '../../src/backup/BackupState';
 
 import { expect, register } from '../expect';
 
@@ -7,31 +8,51 @@ import RsyncTask from '../../src/task/RsyncTask';
 
 describe('RsyncTask', () => {
   describe('command', () => {
-    it('should return the rsync command', () => {
+    const config = new RsyncConfiguration(
+      'src',
+      'dest/{dest}',
+      {
+        mode: RsyncMode.BACKUP,
+        args: '-a',
+        excludes: [
+          'a',
+          'b',
+          'c'
+        ],
+        hardlinks: {
+          basePath: 'hard/'
+        },
+        createDest: true
+      }
+    );
+
+    beforeEach(() => {
       register('rsyncBin', '/usr/bin/rsync');
+    });
 
-      const config = new RsyncConfiguration(
-        'src',
-        'dest',
-        {
-          mode: RsyncMode.BACKUP,
-          args: '-a',
-          excludes: [
-            'a',
-            'b',
-            'c'
-          ],
-          hardlinks: {
-            basePath: 'hard'
-          },
-          createDest: true
-        }
-      );
-
-      const task = new RsyncTask(config, 'somewhere');
+    it('should return the rsync command when no backup state is provided', () => {
+      const task = new RsyncTask(config);
 
       expect((task as any).command()).to.equal(
-        '/usr/bin/rsync --link-dest=hard -a --exclude=a --exclude=b --exclude=c src dest');
+        '/usr/bin/rsync -a --exclude=a --exclude=b --exclude=c src dest/{dest}');
+    });
+
+    it('should return the rsync command', () => {
+      const backupState = new BackupState('dummy', 'somewhere');
+
+      const task = new RsyncTask(config, backupState);
+
+      expect((task as any).command()).to.equal(
+        '/usr/bin/rsync -a --exclude=a --exclude=b --exclude=c src dest/somewhere');
+    });
+
+    it('should return the rsync command and previous backup is present', () => {
+      const backupState = new BackupState('dummy', 'next', 'previous');
+
+      const task = new RsyncTask(config, backupState);
+
+      expect((task as any).command()).to.equal(
+        '/usr/bin/rsync --link-dest=hard/previous -a --exclude=a --exclude=b --exclude=c src dest/next');
     });
   });
 });

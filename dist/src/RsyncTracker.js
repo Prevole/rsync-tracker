@@ -21,7 +21,7 @@ const winston_daily_rotate_file_1 = __importDefault(require("winston-daily-rotat
 const logform_1 = require("logform");
 const yaml = __importStar(require("js-yaml"));
 const Registry_1 = __importDefault(require("./ioc/Registry"));
-const BackupPathBuilder_1 = __importDefault(require("./backup/BackupPathBuilder"));
+const BackupStateBuilder_1 = __importDefault(require("./backup/BackupStateBuilder"));
 const ConfigurationLoader_1 = __importDefault(require("./config/ConfigurationLoader"));
 const Logger_1 = __importDefault(require("./logging/Logger"));
 const SyncTaskBuilder_1 = __importDefault(require("./task/SyncTaskBuilder"));
@@ -79,7 +79,7 @@ class RsyncTracker {
         Registry_1.default.registerIfNotExist('fileUtils', fileUtils);
         Registry_1.default.registerIfNotExist('nameUtils', new NameUtils_1.default());
         Registry_1.default.registerIfNotExist('pathUtils', new PathUtils_1.default());
-        Registry_1.default.registerIfNotExist('backupPathBuilder', new BackupPathBuilder_1.default());
+        Registry_1.default.registerIfNotExist('backupStateBuilder', new BackupStateBuilder_1.default());
         const loader = new ConfigurationLoader_1.default();
         const config = loader.load();
         const taskEngine = new TaskEngine_1.default(config, new SyncTaskBuilder_1.default());

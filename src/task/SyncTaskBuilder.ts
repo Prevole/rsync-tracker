@@ -1,4 +1,4 @@
-import BackupPathBuilder from '../backup/BackupPathBuilder';
+import BackupStateBuilder from '../backup/BackupStateBuilder';
 import { RsyncMode } from '../config/RsyncConfiguration';
 import TrackerConfiguration from '../config/TrackerConfiguration';
 import Inject from '../ioc/Inject';
@@ -11,28 +11,28 @@ import TaskBuilder from './TaskBuilder';
 
 export default class SyncTaskBuilder implements TaskBuilder {
   @Inject()
-  private backupPathBuilder!: BackupPathBuilder;
+  private backupStateBuilder!: BackupStateBuilder;
 
   build(config: TrackerConfiguration): Taskable[] {
-    const backupPath = this.backupPathBuilder.nextBackupPath(config);
+    const backupState = this.backupStateBuilder.build(config);
 
     const tasks: Taskable[] = [];
 
     if (config.shouldCreateDest()) {
       if (config.isSsh()) {
-        const dest = config.sshConfig.dest.replace('{dest}', backupPath);
+        const dest = config.sshConfig.dest.replace('{dest}', backupState.next);
         tasks.push(new SshTask(config.sshConfig, `mkdir -p ${dest}`));
       } else {
-        const dest = config.rsyncConfig.dest.replace('{dest}', backupPath);
+        const dest = config.rsyncConfig.dest.replace('{dest}', backupState.next);
         tasks.push(new SimpleTask(`mkdir -p ${dest}`));
       }
     }
 
     if (config.rsyncConfig.mode === RsyncMode.BACKUP) {
-      tasks.push(new RsyncTask(config.rsyncConfig, backupPath));
+      tasks.push(new RsyncTask(config.rsyncConfig, backupState));
 
       tasks.push(new ClojureTask(() => {
-        this.backupPathBuilder.updateLatestBackupPath(config, backupPath);
+        this.backupStateBuilder.update(backupState);
         return true;
       }).runIfPreviousTaskFail(true));
     } else {

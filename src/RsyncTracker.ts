@@ -12,7 +12,7 @@ import * as yaml from 'js-yaml';
 
 import Registry from './ioc/Registry';
 
-import BackupPathBuilder from './backup/BackupPathBuilder';
+import BackupStateBuilder from './backup/BackupStateBuilder';
 import ConfigurationLoader from './config/ConfigurationLoader';
 import Logger from './logging/Logger';
 import SyncTaskBuilder from './task/SyncTaskBuilder';
@@ -89,7 +89,7 @@ export default class RsyncTracker {
     Registry.registerIfNotExist('nameUtils', new NameUtils());
     Registry.registerIfNotExist('pathUtils', new PathUtils());
 
-    Registry.registerIfNotExist('backupPathBuilder', new BackupPathBuilder());
+    Registry.registerIfNotExist('backupStateBuilder', new BackupStateBuilder());
 
     const loader = new ConfigurationLoader();
     const config = loader.load();

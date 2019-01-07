@@ -17,22 +17,22 @@ const SimpleTask_1 = __importDefault(require("./SimpleTask"));
 const SshTask_1 = __importDefault(require("./SshTask"));
 class SyncTaskBuilder {
     build(config) {
-        const backupPath = this.backupPathBuilder.nextBackupPath(config);
+        const backupState = this.backupStateBuilder.build(config);
         const tasks = [];
         if (config.shouldCreateDest()) {
             if (config.isSsh()) {
-                const dest = config.sshConfig.dest.replace('{dest}', backupPath);
+                const dest = config.sshConfig.dest.replace('{dest}', backupState.next);
                 tasks.push(new SshTask_1.default(config.sshConfig, `mkdir -p ${dest}`));
             }
             else {
-                const dest = config.rsyncConfig.dest.replace('{dest}', backupPath);
+                const dest = config.rsyncConfig.dest.replace('{dest}', backupState.next);
                 tasks.push(new SimpleTask_1.default(`mkdir -p ${dest}`));
             }
         }
         if (config.rsyncConfig.mode === RsyncConfiguration_1.RsyncMode.BACKUP) {
-            tasks.push(new RsyncTask_1.default(config.rsyncConfig, backupPath));
+            tasks.push(new RsyncTask_1.default(config.rsyncConfig, backupState));
             tasks.push(new ClojureTask_1.default(() => {
-                this.backupPathBuilder.updateLatestBackupPath(config, backupPath);
+                this.backupStateBuilder.update(backupState);
                 return true;
             }).runIfPreviousTaskFail(true));
         }
@@ -44,6 +44,6 @@ class SyncTaskBuilder {
 }
 __decorate([
     Inject_1.default()
-], SyncTaskBuilder.prototype, "backupPathBuilder", void 0);
+], SyncTaskBuilder.prototype, "backupStateBuilder", void 0);
 exports.default = SyncTaskBuilder;
 //# sourceMappingURL=SyncTaskBuilder.js.map

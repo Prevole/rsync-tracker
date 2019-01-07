@@ -3,8 +3,9 @@ import TrackerConfiguration from '../config/TrackerConfiguration';
 import DateUtils from '../utils/DateUtils';
 import DigestUtils from '../utils/DigestUtils';
 import PathUtils from '../utils/PathUtils';
+import BackupState from './BackupState';
 
-export default class BackupPathBuilder {
+export default class BackupStateBuilder {
   @Inject()
   private backupDir!: string;
 
@@ -20,16 +21,17 @@ export default class BackupPathBuilder {
   @Inject()
   private fs: any;
 
-  nextBackupPath(config: TrackerConfiguration): string {
+  build(config: TrackerConfiguration): BackupState {
     const nextPath = this.pathUtils.pathFromDate(this.dateUtils.now());
     const previousPath = this.previousBackupPath(config.name);
+    const unconflictedNextPath = this.pathUtils.avoidConflict(previousPath, nextPath);
 
-    return this.pathUtils.avoidConflict(previousPath, nextPath);
+    return new BackupState(config.name, unconflictedNextPath, previousPath);
   }
 
-  updateLatestBackupPath(config: TrackerConfiguration, usedPath: string) {
-    const lastFile = this.pathToLastFile(this.digestDir(config.name));
-    this.fs.writeFileSync(lastFile, usedPath, 'utf8');
+  update(state: BackupState) {
+    const lastFile = this.pathToLastFile(this.digestDir(state.name));
+    this.fs.writeFileSync(lastFile, state.next, 'utf8');
   }
 
   private previousBackupPath(name: string): string | undefined {
