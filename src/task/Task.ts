@@ -1,13 +1,20 @@
 import { TaskPriority } from '../queue/QueueTask';
 import Taskable from './Taskable';
+import TaskEngineState from './TaskEngineState';
 
 export default abstract class Task implements Taskable {
-  private readonly _priority: TaskPriority;
+  private readonly _name: string;
+  private _priority: TaskPriority;
 
   private _runIfPreviousTaskFail: boolean = false;
 
-  protected constructor(priority: TaskPriority) {
+  protected constructor(name: string, priority: TaskPriority) {
+    this._name = name;
     this._priority = priority;
+  }
+
+  name(): string {
+    return this._name;
   }
 
   runIfPreviousTaskFail(canRun: boolean): Task {
@@ -19,9 +26,13 @@ export default abstract class Task implements Taskable {
     return this._runIfPreviousTaskFail;
   }
 
-  priority(): TaskPriority {
+  get priority(): TaskPriority {
     return this._priority;
   }
 
-  abstract run(): boolean;
+  set priority(priority: TaskPriority) {
+    this._priority = priority;
+  }
+
+  abstract run(state: TaskEngineState): boolean;
 }

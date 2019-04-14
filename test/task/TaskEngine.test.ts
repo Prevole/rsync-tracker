@@ -1,13 +1,14 @@
 import 'mocha';
 
 import Configuration from '../../src/config/Configuration';
+import TrackerConfiguration from '../../src/config/TrackerConfiguration';
 import Registry from '../../src/ioc/Registry';
 import { TaskPriority } from '../../src/queue/QueueTask';
 import Task from '../../src/task/Task';
-import TaskBuilder from '../../src/task/TaskBuilder';
-import TrackerConfiguration from '../../src/config/TrackerConfiguration';
 import Taskable from '../../src/task/Taskable';
+import TaskBuilder from '../../src/task/TaskBuilder';
 import TaskEngine from '../../src/task/TaskEngine';
+import TaskEngineState from '../../src/task/TaskEngineState';
 
 import { expect } from '../expect';
 
@@ -17,7 +18,7 @@ class TestTask extends Task {
   private readonly isInError: boolean;
 
   constructor(isInError?: boolean) {
-    super(TaskPriority.NORMAL);
+    super('dummy', TaskPriority.NORMAL);
 
     if (isInError !== undefined) {
       this.isInError = isInError;
@@ -29,6 +30,20 @@ class TestTask extends Task {
   run(): boolean {
     this.hasRun = true;
     return !this.isInError;
+  }
+}
+
+class TestTaskGenerator extends Task {
+  public scheduledTask?: TestTask;
+
+  constructor() {
+    super('dummy', TaskPriority.NORMAL);
+  }
+
+  run(state: TaskEngineState): boolean {
+    this.scheduledTask = new TestTask(false);
+    state.scheduleTask(this.scheduledTask);
+    return true;
   }
 }
 
@@ -54,6 +69,7 @@ const dummyTracker = new TrackerConfiguration('dummy', {
 describe('TaskEngine', () => {
   beforeEach(() => {
     Registry.register('logger', { info: () => {} });
+    Registry.register('taskEngineState', new TaskEngineState());
   });
 
   afterEach(() => {
@@ -175,6 +191,25 @@ describe('TaskEngine', () => {
       taskEngine.process();
 
       expect(task1.hasRun).to.be.true;
+      expect(task2.hasRun).to.be.true;
+    });
+
+    it('should process the tasks and schedule a new task from previous task', () => {
+      const config = new Configuration();
+      config.addTracker(dummyTracker);
+
+      const task1 = new TestTaskGenerator();
+      const task2 = new TestTask();
+
+      const taskBuilder = new DummyTaskBuilder((nbCalls: number) => {
+        return [ task1, task2 ];
+      });
+
+      const taskEngine = new TaskEngine(config, taskBuilder);
+
+      taskEngine.process();
+
+      expect(task1.scheduledTask!.hasRun).to.be.true;
       expect(task2.hasRun).to.be.true;
     });
   });

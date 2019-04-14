@@ -1,5 +1,5 @@
 export default interface Queueable {
-  priority(): TaskPriority;
+  priority: TaskPriority;
 }
 
 export enum TaskPriority {

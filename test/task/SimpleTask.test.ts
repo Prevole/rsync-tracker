@@ -7,7 +7,7 @@ import SimpleTask from '../../src/task/SimpleTask';
 describe('SimpleTask', () => {
   describe('command', () => {
     it('should return the command', () => {
-      const task = new SimpleTask('ls /var');
+      const task = new SimpleTask('test', 'ls /var');
       expect((task as any).command()).to.equal('ls /var');
     });
   });

@@ -6,8 +6,8 @@ export default class SshTask extends CommandTask {
   private readonly _sshConfig: SshConfiguration;
   private readonly _command: string;
 
-  constructor(sshConfig: SshConfiguration, command: string) {
-    super(TaskPriority.NORMAL);
+  constructor(name: string, sshConfig: SshConfiguration, command: string) {
+    super(name, TaskPriority.NORMAL);
     this._sshConfig = sshConfig;
     this._command = command;
   }

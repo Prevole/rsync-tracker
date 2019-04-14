@@ -30,6 +30,6 @@ export default class Queue {
   }
 
   private taskIsBefore(task: Taskable, against: number): boolean {
-    return task.priority() < this.items[against].priority();
+    return task.priority < this.items[against].priority;
   }
 }

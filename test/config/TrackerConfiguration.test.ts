@@ -135,6 +135,9 @@ describe('TrackerConfiguration', () => {
       expect(config.toJson()).to.deep.equal({
         name: 'configName',
         rsync: {
+          archivesArgs: undefined,
+          archivesDirName: undefined,
+          archivesExcludes: [],
           args: undefined,
           bin: 'bin/rsync',
           createDest: false,

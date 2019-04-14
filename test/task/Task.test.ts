@@ -7,7 +7,7 @@ import Task from '../../src/task/Task';
 
 class TestTask extends Task {
   constructor() {
-    super(TaskPriority.NORMAL);
+    super('dummy', TaskPriority.NORMAL);
   }
 
   run(): boolean {
@@ -18,7 +18,7 @@ class TestTask extends Task {
 describe('Task', () => {
   describe('priority', () => {
     it('has normal priority', () => {
-      expect(new TestTask().priority()).to.equals(TaskPriority.NORMAL);
+      expect(new TestTask().priority).to.equals(TaskPriority.NORMAL);
     });
   });
 

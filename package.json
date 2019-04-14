@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/Prevole/rsync-tracker#readme",
   "dependencies": {
+    "dayjs": "^1.7.8",
     "js-yaml": "^3.8.4",
     "lodash": "^4.17.4",
     "reflect-metadata": "^0.1.12",

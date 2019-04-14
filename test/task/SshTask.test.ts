@@ -15,7 +15,7 @@ describe('SshTask', () => {
         args: '-p 1234'
       });
 
-      const task = new SshTask(config, 'ls /');
+      const task = new SshTask('test', config, 'ls /');
 
       expect((task as any).command()).to.equal('/usr/bin/ssh -p 1234 ls /');
     });

@@ -24,6 +24,18 @@ definitions:
         - .DS_Store
       hardlinks:
         basePath: ../../../../
+      archivesArgs: -avh
+      archivesDirName: arch
+      archivesExcludes:
+        - .DS_Store
+        - test
+      policies:
+        - groupBy: year
+          older: 1 year
+        - groupBy: month
+          older: 3 months
+        - groupBy: day
+          older: 10 days
     ssh:
       dest: /some/path/{dest}
       args: user@host -p1235

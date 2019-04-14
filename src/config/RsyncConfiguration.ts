@@ -1,5 +1,6 @@
 import Inject from '../ioc/Inject';
 import FileUtils from '../utils/FileUtils';
+import RetentionPolicyConfiguration, { RawRetentionPolicyConfiguration } from './RetentionPolicyConfiguration';
 
 export default class RsyncConfiguration {
   private _src: string;
@@ -13,8 +14,17 @@ export default class RsyncConfiguration {
 
   private readonly _createDest: boolean = false;
 
+  private readonly _archivesDirName: string;
+  private readonly _archivesArgs?: string;
+  private readonly _archivesExcludes: string[] = [];
+
+  private readonly _policies: RetentionPolicyConfiguration[] = [];
+
   @Inject('rsyncBin')
   private _bin!: string;
+
+  @Inject('defaultArchivesDirName')
+  private _defaultArchivesDirName!: string;
 
   @Inject()
   private path: any;
@@ -29,6 +39,8 @@ export default class RsyncConfiguration {
   ) {
     this._src = src;
     this._dest = dest;
+
+    this._archivesDirName = this._defaultArchivesDirName;
 
     if (config) {
       if (config.mode) {
@@ -49,6 +61,24 @@ export default class RsyncConfiguration {
 
       if (config.createDest !== undefined) {
         this._createDest = config.createDest;
+      }
+
+      if (config.archivesDirName !== undefined) {
+        this._archivesDirName = config.archivesDirName;
+      }
+
+      if (config.archivesArgs) {
+        this._archivesArgs = config.archivesArgs;
+      }
+
+      if (config.archivesExcludes !== undefined) {
+        this._archivesExcludes = config.archivesExcludes;
+      }
+
+      if (config.policies !== undefined) {
+        config.policies.forEach(rawPolicy => {
+          this._policies.push(new RetentionPolicyConfiguration(rawPolicy));
+        });
       }
     }
   }
@@ -81,8 +111,28 @@ export default class RsyncConfiguration {
     return this._mode;
   }
 
+  get policies(): RetentionPolicyConfiguration[] {
+    return this._policies;
+  }
+
   get isCreateDest(): boolean {
     return this._createDest;
+  }
+
+  hasPolicies(): boolean {
+    return this._policies.length > 0;
+  }
+
+  get archivesDirName(): string {
+    return this._archivesDirName;
+  }
+
+  get archivesArgs(): string | undefined {
+    return this._archivesArgs;
+  }
+
+  get archivesExcludes(): string[] | undefined {
+    return this._archivesExcludes;
   }
 
   resolve(): RsyncConfiguration {
@@ -98,12 +148,19 @@ export default class RsyncConfiguration {
       mode: this._mode,
       bin: this._bin,
       args: this._args,
+      archivesDirName: this._archivesDirName,
+      archivesArgs: this._archivesArgs,
+      archivesExcludes: this.archivesExcludes,
       createDest: this._createDest,
       excludes: this._excludes
     };
 
     if (this._hardlinks) {
       json.hardlinks = this._hardlinks;
+    }
+
+    if (this._policies.length > 0) {
+      json.policies = this._policies.map(policy => policy.toJson());
     }
 
     return json;
@@ -122,5 +179,9 @@ export type RawRsyncConfiguration = {
   hardlinks?: {
     basePath: string
   },
-  createDest?: boolean
+  createDest?: boolean,
+  archivesDirName?: string,
+  archivesArgs?: string,
+  archivesExcludes?: string[],
+  policies?: RawRetentionPolicyConfiguration[]
 };

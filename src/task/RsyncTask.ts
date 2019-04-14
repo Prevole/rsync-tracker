@@ -8,8 +8,8 @@ export default class RsyncTask extends CommandTask {
   private readonly _rsyncConfig: RsyncConfiguration;
   private readonly _backupState?: BackupState;
 
-  constructor(rsyncConfig: RsyncConfiguration, backupState?: BackupState) {
-    super(TaskPriority.NORMAL);
+  constructor(name: string, rsyncConfig: RsyncConfiguration, backupState?: BackupState) {
+    super(name, TaskPriority.NORMAL);
     this._rsyncConfig = rsyncConfig;
     this._backupState = backupState;
   }

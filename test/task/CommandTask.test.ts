@@ -1,4 +1,5 @@
 import 'mocha';
+import TaskEngineState from '../../src/task/TaskEngineState';
 
 import { expect, register, sinon } from '../expect';
 
@@ -8,7 +9,7 @@ import CommandTask from '../../src/task/CommandTask';
 
 class TestTask extends CommandTask {
   constructor() {
-    super(TaskPriority.NORMAL);
+    super('dummy', TaskPriority.NORMAL);
   }
 
   protected command(): string {
@@ -32,7 +33,7 @@ describe('CommandTask', () => {
     });
 
     it('should run the command', () => {
-      const result = new TestTask().run();
+      const result = new TestTask().run(new TaskEngineState());
 
       expect(result).to.be.true;
       expect(loggerStub.info).to.have.been.calledWith('Run command: dummy');
@@ -43,7 +44,7 @@ describe('CommandTask', () => {
       const err = new Error('Error');
       childProcessStub.execSync.throws(err);
 
-      const result = new TestTask().run();
+      const result = new TestTask().run(new TaskEngineState());
 
       expect(result).to.be.false;
       expect(loggerStub.info).to.have.been.calledWith('Run command: dummy');

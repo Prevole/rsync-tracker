@@ -117,6 +117,8 @@ RT_LOGS_TO_CONSOLE=true`;
     Registry.register('os', os);
     Registry.register('dateUtils', dateUtils);
 
+    const containerName = 'rsync_tracker_sshd';
+
     function startCreateAndStartContainer() {
       function sleep(ms: number) {
         return new Promise(function(resolve) {
@@ -126,7 +128,7 @@ RT_LOGS_TO_CONSOLE=true`;
 
       return docker
         .createContainer({
-          name: 'rsync_tracker_sshd',
+          name: containerName,
           Image: 'panubo/sshd',
           Env: [
             `SSH_USERS=tester:${originalOs.userInfo().uid}:1001`
@@ -155,8 +157,9 @@ RT_LOGS_TO_CONSOLE=true`;
     }
 
     docker.
-      listContainers({ filters: { name: [ 'rsync_tracker_sshd' ] } })
+      listContainers({ all: true, filters: { name: [ containerName ] } })
       .then(function(containers: ContainerInfo[]) {
+        console.log(containers);
         if (containers.length > 0) {
           return docker
             .getContainer(containers[0].Id)

@@ -31,7 +31,7 @@ describe('RsyncTask', () => {
     });
 
     it('should return the rsync command when no backup state is provided', () => {
-      const task = new RsyncTask(config);
+      const task = new RsyncTask('test', config);
 
       expect((task as any).command()).to.equal(
         '/usr/bin/rsync -a --exclude=a --exclude=b --exclude=c src dest/{dest}');
@@ -40,7 +40,7 @@ describe('RsyncTask', () => {
     it('should return the rsync command', () => {
       const backupState = new BackupState('dummy', 'somewhere');
 
-      const task = new RsyncTask(config, backupState);
+      const task = new RsyncTask('test', config, backupState);
 
       expect((task as any).command()).to.equal(
         '/usr/bin/rsync -a --exclude=a --exclude=b --exclude=c src dest/somewhere');
@@ -49,7 +49,7 @@ describe('RsyncTask', () => {
     it('should return the rsync command and previous backup is present', () => {
       const backupState = new BackupState('dummy', 'next', 'previous');
 
-      const task = new RsyncTask(config, backupState);
+      const task = new RsyncTask('test', config, backupState);
 
       expect((task as any).command()).to.equal(
         '/usr/bin/rsync --link-dest=hard/previous -a --exclude=a --exclude=b --exclude=c src dest/next');

@@ -1,6 +1,7 @@
 import Inject from '../ioc/Inject';
 import Logger from '../logging/Logger';
 import Task from './Task';
+import TaskEngineState from './TaskEngineState';
 
 export default abstract class CommandTask extends Task {
   @Inject()
@@ -9,7 +10,7 @@ export default abstract class CommandTask extends Task {
   @Inject()
   private logger!: Logger;
 
-  run(): boolean {
+  run(state: TaskEngineState): boolean {
     const command = this.command();
 
     this.logger.info(`Run command: ${command}`);
@@ -19,7 +20,9 @@ export default abstract class CommandTask extends Task {
       if (result.length === 0) {
         this.logger.info('The command produced no result content');
       } else {
-        this.logger.info(result.toString());
+        const resultStr = result.toString();
+        state.store(this.name(), resultStr);
+        this.logger.info(resultStr);
       }
       return true;
     } catch (err) {

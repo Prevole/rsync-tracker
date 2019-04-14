@@ -5,6 +5,7 @@ import Logger from '../logging/Logger';
 import Queue from '../queue/Queue';
 import Taskable from './Taskable';
 import TaskBuilder from './TaskBuilder';
+import TaskEngineState from './TaskEngineState';
 
 export default class TaskEngine {
   private readonly config: Configuration;
@@ -12,6 +13,9 @@ export default class TaskEngine {
 
   @Inject()
   private logger!: Logger;
+
+  @Inject()
+  private taskEngineState!: TaskEngineState;
 
   constructor(config: Configuration, builder: TaskBuilder) {
     this.config = config;
@@ -30,11 +34,17 @@ export default class TaskEngine {
         const task: Taskable = queue.dequeue();
 
         if (previousResult || (!previousResult && task.canRunIfPreviousTaskFailed())) {
-          this.logger.info('Task will be run');
-          previousResult = task.run();
-          this.logger.info(`Task ran and was ${previousResult ? 'successful' : 'failure'}`);
+          this.logger.info(`Task [${task.name()}] will be run`);
+          previousResult = task.run(this.taskEngineState);
+
+          if (this.taskEngineState.hasTasks()) {
+            this.logger.info(`Task [${task.name()}] generated new tasks`);
+            queue.queueAll(this.taskEngineState.flushTasks());
+          }
+
+          this.logger.info(`Task [${task.name()}] ran and was ${previousResult ? 'successful' : 'failure'}`);
         } else {
-          this.logger.info('Task is skipped (previous task failed)');
+          this.logger.info(`Task [${task.name()}] is skipped (previous task failed)`);
         }
       }
     });

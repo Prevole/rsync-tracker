@@ -8,7 +8,7 @@ import { expect } from '../expect';
 
 class TestTask extends Task {
   constructor(priority: TaskPriority) {
-    super(priority);
+    super('dummy', priority);
   }
 
   run(): boolean {

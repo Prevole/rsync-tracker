@@ -4,8 +4,8 @@ import CommandTask from './CommandTask';
 export default class SimpleTask extends CommandTask {
   private readonly _command: string;
 
-  constructor(command: string) {
-    super(TaskPriority.NORMAL);
+  constructor(name: string, command: string) {
+    super(name, TaskPriority.NORMAL);
     this._command = command;
   }
 

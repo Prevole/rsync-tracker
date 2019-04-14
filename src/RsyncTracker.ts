@@ -2,6 +2,7 @@ import pkg from '../package.json';
 
 import * as childProcess from 'child_process';
 import * as crypto from 'crypto';
+import dayjs from 'dayjs';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
@@ -17,6 +18,7 @@ import ConfigurationLoader from './config/ConfigurationLoader';
 import Logger from './logging/Logger';
 import SyncTaskBuilder from './task/SyncTaskBuilder';
 import TaskEngine from './task/TaskEngine';
+import TaskEngineState from './task/TaskEngineState';
 
 import DateUtils from './utils/DateUtils';
 import DigestUtils from './utils/DigestUtils';
@@ -24,6 +26,7 @@ import EnvUtils from './utils/EnvUtils';
 import FileUtils from './utils/FileUtils';
 import NameUtils from './utils/NameUtils';
 import PathUtils from './utils/PathUtils';
+import RetentionPolicyParserUtils from './utils/RetentionPolicyParserUtils';
 
 function prepareLoggers(): winston.Logger[] {
   const dailyTransport = new DailyRotateFile({
@@ -67,6 +70,7 @@ export default class RsyncTracker {
     Registry.registerIfNotExist('fs', fs);
     Registry.registerIfNotExist('path', path);
     Registry.registerIfNotExist('os', os);
+    Registry.registerIfNotExist('dayjs', dayjs);
 
     Registry.registerIfNotExist('yaml', yaml);
 
@@ -88,8 +92,13 @@ export default class RsyncTracker {
     Registry.registerIfNotExist('fileUtils', fileUtils);
     Registry.registerIfNotExist('nameUtils', new NameUtils());
     Registry.registerIfNotExist('pathUtils', new PathUtils());
+    Registry.registerIfNotExist('retentionPolicyParserUtils', new RetentionPolicyParserUtils());
 
     Registry.registerIfNotExist('backupStateBuilder', new BackupStateBuilder());
+
+    Registry.registerIfNotExist('now', new Date());
+
+    Registry.registerIfNotExist('taskEngineState', new TaskEngineState());
 
     const loader = new ConfigurationLoader();
     const config = loader.load();

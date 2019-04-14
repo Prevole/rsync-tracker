@@ -1,5 +1,6 @@
 /* tslint expr: true*/
 import 'mocha';
+import RetentionPolicyParserUtils from '../../../src/utils/RetentionPolicyParserUtils';
 
 import { expect } from '../../expect';
 
@@ -20,6 +21,7 @@ describe('configuration', () => {
 
     Registry.register('rsyncBin', '/usr/local/bin/rsync');
     Registry.register('sshBin', '/usr/bin/ssh');
+    Registry.register('defaultArchivesDirName', 'archives');
     Registry.register('fs', fs);
     Registry.register('path', path);
     Registry.register('yaml', yaml);
@@ -28,6 +30,7 @@ describe('configuration', () => {
     Registry.register('nameUtils', nameUtils);
     Registry.register('logger', { info: (str: string) => console.log(str) });
     Registry.register('baseDir', baseDir);
+    Registry.register('retentionPolicyParserUtils', new RetentionPolicyParserUtils());
 
     const configuration: Configuration = new ConfigurationLoader().load();
 
@@ -41,6 +44,9 @@ describe('configuration', () => {
           mode: 'sync',
           createDest: false,
           args: '-r',
+          archivesArgs: undefined,
+          archivesDirName: 'archives',
+          archivesExcludes: [],
           excludes: []
         },
         ssh: undefined
@@ -53,6 +59,9 @@ describe('configuration', () => {
           mode: 'sync',
           createDest: false,
           args: '-r --delete',
+          archivesArgs: undefined,
+          archivesDirName: 'archives',
+          archivesExcludes: [],
           excludes: [
             'AccountsMap.plist',
             'SignaturesByAccount.plist'
@@ -71,7 +80,32 @@ describe('configuration', () => {
           excludes: [
             '.DS_Store'
           ],
-          hardlinks: '../../../../'
+          hardlinks: '../../../../',
+          archivesArgs: '-avh',
+          archivesDirName: 'arch',
+          archivesExcludes: [
+            '.DS_Store',
+            'test'
+          ],
+          policies: [{
+            groupBy: 'year',
+            older: {
+              unit: 'year',
+              quantity: 1
+            }
+          }, {
+            groupBy: 'month',
+            older: {
+              unit: 'month',
+              quantity: 3
+            }
+          }, {
+            groupBy: 'day',
+            older: {
+              unit: 'day',
+              quantity: 10
+            }
+          }]
         },
         ssh: {
           bin: '/usr/bin/ssh',
@@ -87,6 +121,9 @@ describe('configuration', () => {
           mode: 'sync',
           createDest: false,
           args: '-r',
+          archivesArgs: undefined,
+          archivesDirName: 'archives',
+          archivesExcludes: [],
           excludes: []
         },
         ssh: undefined
@@ -99,6 +136,9 @@ describe('configuration', () => {
           mode: 'sync',
           createDest: false,
           args: undefined,
+          archivesArgs: undefined,
+          archivesDirName: 'archives',
+          archivesExcludes: [],
           excludes: []
         },
         ssh: undefined
@@ -111,6 +151,9 @@ describe('configuration', () => {
           mode: 'backup',
           createDest: false,
           args: '-avh --delete -e \'ssh -p 1234\'',
+          archivesArgs: undefined,
+          archivesDirName: 'archives',
+          archivesExcludes: [],
           excludes: [
             '.DS_Store'
           ],
