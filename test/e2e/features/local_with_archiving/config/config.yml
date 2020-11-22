@@ -1,0 +1,17 @@
+definitions:
+  - name: First
+    src: ~/data/first
+    dest: ~/output
+    rsync:
+      args: -r -v
+      archivesArgs: -avh
+      archivesDirName: arch
+      archivesExcludes:
+        - .DS_Store
+      policies:
+        - groupBy: year
+          older: 1 year
+        - groupBy: month
+          older: 3 months
+        - groupBy: day
+          older: 10 days
